@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NUST Innovation & Business Development (IBD) | Student Registration & Innovation System</title>
+
+  <!-- Google Fonts: Inter & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="css/styles.css">
+
+  <!-- Chart.js CDN for Analytics -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+  <!-- App Header -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand-wrapper">
+        <!-- Custom NUST Crest SVG -->
+        <svg class="nust-crest" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M50 4 L92 24 L92 76 L50 96 L8 76 L8 24 Z" fill="#0B2545" stroke="#F39C12" stroke-width="4"/>
+          <path d="M50 14 L82 30 L82 70 L50 86 L18 70 L18 30 Z" fill="#134074" stroke="#0077FE" stroke-width="2"/>
+          <circle cx="50" cy="50" r="18" fill="#F39C12"/>
+          <text x="50" y="56" font-family="'Outfit', sans-serif" font-size="16" font-weight="bold" fill="#0B2545" text-anchor="middle">NUST</text>
+        </svg>
+
+        <div class="brand-titles">
+          <h1>NATIONAL UNIVERSITY OF SCIENCE AND TECHNOLOGY</h1>
+          <h2>Innovation and Business Development (IBD) Hub</h2>
+        </div>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 1rem;">
+        <span class="doc-code-badge" title="Official Form Reference Standard">FORM: IBD 002 23 ITT</span>
+        
+        <!-- Navigation Tabs -->
+        <nav class="nav-tabs">
+          <button class="tab-btn active" data-tab="dashboard">
+            📊 Dashboard & Registry
+            <span class="badge-count" id="badgeNavCount">0</span>
+          </button>
+          <button class="tab-btn" data-tab="application-form">
+            📝 Apply to Join Hub
+          </button>
+          <button class="tab-btn" data-tab="trl-guide">
+            💡 TRL Reference Guide
+          </button>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main View Container -->
+  <main class="main-wrapper">
+
+    <!-- VIEW 1: DASHBOARD & STUDENT REGISTRY -->
+    <section id="view-dashboard" class="view-section active">
+      <!-- KPI Stats Grid -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-icon-box kpi-icon-blue">🎓</div>
+          <div class="kpi-info">
+            <h3>Registered Students</h3>
+            <div class="kpi-value" id="kpiTotalStudents">0</div>
+            <div class="kpi-subtext">Captured in IBD Database</div>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon-box kpi-icon-gold">🚀</div>
+          <div class="kpi-info">
+            <h3>Total Inventions</h3>
+            <div class="kpi-value" id="kpiTotalProjects">0</div>
+            <div class="kpi-subtext">Submitted Form IBD 002 23</div>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon-box kpi-icon-purple">⏳</div>
+          <div class="kpi-info">
+            <h3>Pending Review</h3>
+            <div class="kpi-value" id="kpiPending">0</div>
+            <div class="kpi-subtext">Awaiting IBD Approval</div>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon-box kpi-icon-green">🏢</div>
+          <div class="kpi-info">
+            <h3>Incubated Projects</h3>
+            <div class="kpi-value" id="kpiIncubated">0</div>
+            <div class="kpi-subtext">Allocated Hub Lab Space</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Analytics Charts Row -->
+      <div class="charts-row">
+        <div class="card-panel">
+          <div class="panel-header">
+            <div class="panel-title">📈 Technology Readiness Level (TRL 1 - 9) Pipeline</div>
+            <span style="font-size: 0.8rem; color: var(--text-dim);">Form IBD 002 23 ITT Section 10</span>
+          </div>
+          <div class="chart-container">
+            <canvas id="chartTRL"></canvas>
+          </div>
+        </div>
+
+        <div class="card-panel">
+          <div class="panel-header">
+            <div class="panel-title">🏛️ Submissions by Faculty</div>
+          </div>
+          <div class="chart-container">
+            <canvas id="chartFaculty"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Student Registry Table Panel -->
+      <div class="card-panel">
+        <div class="panel-header">
+          <div class="panel-title">📋 Student Registration & Application Directory</div>
+          <div style="display: flex; gap: 0.5rem;">
+            <button class="btn btn-secondary btn-sm" id="btnExportCSV">📥 Export CSV</button>
+            <button class="btn btn-gold btn-sm" onclick="document.querySelector('[data-tab=\'application-form\']').click();">
+              ➕ Register New Student
+            </button>
+          </div>
+        </div>
+
+        <!-- Toolbar Filters -->
+        <div class="table-toolbar">
+          <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="searchRegistry" class="form-control" placeholder="Search by Student ID, Name, Project Title, or Department...">
+          </div>
+
+          <div class="filter-controls">
+            <select id="filterFaculty" class="form-control">
+              <option value="">All Faculties</option>
+            </select>
+
+            <select id="filterStatus" class="form-control">
+              <option value="">All Statuses</option>
+              <option value="Pending Review">Pending Review</option>
+              <option value="Under Review">Under Review</option>
+              <option value="Approved for Incubation">Approved for Incubation</option>
+              <option value="Revisions Requested">Revisions Requested</option>
+              <option value="Rejected">Rejected</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Registry Table -->
+        <div class="table-responsive">
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>Student Reg ID</th>
+                <th>Student Innovator</th>
+                <th>Project / Invention Title</th>
+                <th>TRL Level</th>
+                <th>Status</th>
+                <th>Date Applied</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="registryTableBody">
+              <!-- Dynamically rendered by app.js -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- VIEW 2: STUDENT APPLICATION FORM WIZARD (IBD 002 23 ITT) -->
+    <section id="view-application-form" class="view-section">
+      <div class="form-wizard-card">
+        <div class="wizard-header">
+          <div class="wizard-title">
+            <h2>Application to Join the Innovation Hub</h2>
+            <p>National University of Science and Technology — Form Code: <strong>IBD 002 23 ITT</strong></p>
+          </div>
+          <button class="btn btn-secondary btn-sm" id="btnDemoFill" title="Auto-populate with sample NUST student application for demonstration">
+            ✨ Auto-Fill Demo Application
+          </button>
+        </div>
+
+        <!-- Wizard Steps Indicator Bar -->
+        <div class="wizard-steps">
+          <div class="step-item active" data-step="1">
+            <div class="step-number">1</div>
+            <span>Personal & Academic</span>
+          </div>
+          <div class="step-item" data-step="2">
+            <div class="step-number">2</div>
+            <span>Abstract & Aim</span>
+          </div>
+          <div class="step-item" data-step="3">
+            <div class="step-number">3</div>
+            <span>Invention & TRL</span>
+          </div>
+          <div class="step-item" data-step="4">
+            <div class="step-number">4</div>
+            <span>Incubation & Budget</span>
+          </div>
+          <div class="step-item" data-step="5">
+            <div class="step-number">5</div>
+            <span>Review & Submit</span>
+          </div>
+        </div>
+
+        <!-- Wizard Form Content -->
+        <form id="ibdApplicationForm">
+          <div class="form-body">
+
+            <!-- STEP 1: PERSONAL & FACULTY DETAILS -->
+            <div class="form-step-content active" data-step="1">
+              <div class="form-section-title">👤 Applicant Details</div>
+              
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="title">Title <span style="color:#EF4444">*</span></label>
+                  <select id="title" class="form-control" required>
+                    <option value="Mr">Mr</option>
+                    <option value="Mrs">Mrs</option>
+                    <option value="Miss">Miss</option>
+                    <option value="Ms">Ms</option>
+                    <option value="Dr">Dr</option>
+                    <option value="Prof">Prof</option>
+                    <option value="Eng">Eng</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="name">Full Name <span style="color:#EF4444">*</span></label>
+                  <input type="text" id="name" class="form-control" placeholder="e.g., Tinashe Kudakwashe Moyo" required>
+                </div>
+
+                <div class="form-group">
+                  <label for="studentId">Student Registration Number <span style="color:#EF4444">*</span></label>
+                  <input type="text" id="studentId" class="form-control" placeholder="e.g., N02214890X" required>
+                </div>
+
+                <div class="form-group">
+                  <label for="organisation">Organisation / University</label>
+                  <input type="text" id="organisation" class="form-control" value="National University of Science and Technology">
+                </div>
+
+                <div class="form-group">
+                  <label for="contactPhone">Contact Phone Number <span style="color:#EF4444">*</span></label>
+                  <input type="text" id="contactPhone" class="form-control" placeholder="+263 77 123 4567" required>
+                </div>
+
+                <div class="form-group">
+                  <label for="contactEmail">Contact Email Address <span style="color:#EF4444">*</span></label>
+                  <input type="email" id="contactEmail" class="form-control" placeholder="student.name@student.nust.ac.zw" required>
+                </div>
+
+                <div class="form-group">
+                  <label for="position">Position / Academic Level <span style="color:#EF4444">*</span></label>
+                  <select id="position" class="form-control" required>
+                    <option value="Undergraduate Student (Final Year)">Undergraduate Student (Final Year)</option>
+                    <option value="Undergraduate Student (Year 1-3)">Undergraduate Student (Year 1-3)</option>
+                    <option value="Postgraduate Student (MSc/MPhil)">Postgraduate Student (MSc/MPhil)</option>
+                    <option value="PhD Candidate / Doctoral Researcher">PhD Candidate / Doctoral Researcher</option>
+                    <option value="Lecturer / Academic Staff Innovator">Lecturer / Academic Staff Innovator</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="faculty">Faculty <span style="color:#EF4444">*</span></label>
+                  <select id="faculty" class="form-control" required>
+                    <option value="">-- Select Faculty --</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="department">Department <span style="color:#EF4444">*</span></label>
+                  <select id="department" class="form-control" required>
+                    <option value="">-- Select Faculty First --</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="supervisors">Supervisor(s) Name(s)</label>
+                  <input type="text" id="supervisors" class="form-control" placeholder="e.g., Dr. A. Sibanda & Prof. C. Moyo">
+                </div>
+              </div>
+            </div>
+
+            <!-- STEP 2: PROJECT ABSTRACT & STRATEGY -->
+            <div class="form-step-content" data-step="2">
+              <div class="form-section-title">💡 Project Innovation Overview (Fields 1 - 5)</div>
+
+              <div class="form-grid">
+                <div class="form-group form-grid-full">
+                  <label for="projectTitle">1. Title of the Proposed Project/Innovation <span style="color:#EF4444">*</span></label>
+                  <input type="text" id="projectTitle" class="form-control" placeholder="e.g., AI-Powered Smart Solar Microgrid Controller" required>
+                </div>
+
+                <div class="form-group form-grid-full">
+                  <label for="abstract">2. Abstract (1 page summary) <span style="color:#EF4444">*</span></label>
+                  <textarea id="abstract" class="form-control" placeholder="Provide a detailed summary of your project..." required></textarea>
+                </div>
+
+                <div class="form-group form-grid-full">
+                  <label for="problemStatement">3. Problem Statement <span style="color:#EF4444">*</span></label>
+                  <textarea id="problemStatement" class="form-control" placeholder="Describe the specific problem or challenge your invention solves..." required></textarea>
+                </div>
+
+                <div class="form-group form-grid-full">
+                  <label for="aim">4. Aim <span style="color:#EF4444">*</span></label>
+                  <textarea id="aim" class="form-control" placeholder="State the primary aim and measurable objectives of your innovation..." required></textarea>
+                </div>
+
+                <div class="form-group form-grid-full">
+                  <label for="methodology">5. Project Strategy / Methodology <span style="color:#EF4444">*</span></label>
+                  <textarea id="methodology" class="form-control" placeholder="Outline the technological strategy, research methods, software/hardware architecture..." required></textarea>
+                </div>
+              </div>
+            </div>
+
+            <!-- STEP 3: INVENTION DETAILS & TRL -->
+            <div class="form-step-content" data-step="3">
+              <div class="form-section-title">⚙️ Invention Details & Technology Readiness Level (Fields 6 - 10)</div>
+
+              <div class="form-grid">
+                <div class="form-group form-grid-full">
+                  <label for="expectedOutput">6. Expected Results / Output <span style="color:#EF4444">*</span></label>
+                  <textarea id="expectedOutput" class="form-control" placeholder="Expected tangible outputs (e.g. working prototype, software app, patent)..." required></textarea>
+                </div>
+
+                <div class="form-group form-grid-full">
+                  <label for="rationale">7. Rationale / Justification <span style="color:#EF4444">*</span></label>
+                  <textarea id="rationale" class="form-control" placeholder="Why is this project important? How does it align with Education 5.0 and industrialization?" required></textarea>
+                </div>
+
+                <div class="form-group form-grid-full">
+                  <label for="inventionDescription">8. Full Description of the Invention (with sketches or specs)</label>
+                  <textarea id="inventionDescription" class="form-control" placeholder="Provide technical specifications, schematic layout description, or design parameters..."></textarea>
+                </div>
+
+                <div class="form-group form-grid-full">
+                  <label for="novelty">9. The Novelty of the Invention <span style="color:#EF4444">*</span></label>
+                  <textarea id="novelty" class="form-control" placeholder="Indicate how different the invention is from existing inventions/technologies performing similar functions..." required></textarea>
+                </div>
+
+                <div class="form-group form-grid-full">
+                  <div class="trl-selector-box">
+                    <label for="trl" style="font-size: 1rem; color: var(--nust-gold-glow);">
+                      10. Stage of the Invention & Technology Readiness Level (TRL) <span style="color:#EF4444">*</span>
+                    </label>
+                    <span class="label-help" style="display:block; margin-bottom: 0.5rem;">Select your technology's current development maturity level (TRL 1 to 9):</span>
+                    <select id="trl" class="form-control" required>
+                      <option value="">-- Select TRL Level --</option>
+                    </select>
+
+                    <div id="trlPreviewCard" class="trl-preview-card" style="display:none;"></div>
+                  </div>
+                </div>
+
+                <div class="form-group form-grid-full">
+                  <label for="inventionStage">Stage Descriptor</label>
+                  <input type="text" id="inventionStage" class="form-control" placeholder="e.g. Prototyping Stage, Lab Validation Stage">
+                </div>
+              </div>
+            </div>
+
+            <!-- STEP 4: INCUBATION REQUIREMENTS & BUDGET -->
+            <div class="form-step-content" data-step="4">
+              <div class="form-section-title">🏥 Incubation & Budget Requirements (Fields 11 - 15)</div>
+
+              <div class="form-grid">
+                <div class="form-group form-grid-full">
+                  <label for="teamMembers">11. Team Members Required (if any) & Expertise</label>
+                  <textarea id="teamMembers" class="form-control" placeholder="List co-founders, student team members, and expertise needed..."></textarea>
+                </div>
+
+                <div class="form-group form-grid-full">
+                  <label for="incubationRequirements">12. Incubation Requirements (if any)</label>
+                  <textarea id="incubationRequirements" class="form-control" placeholder="Specify required lab workspace, 3D printers, PCB milling, mentorship, legal IP advice..."></textarea>
+                </div>
+
+                <div class="form-group form-grid-full">
+                  <label for="otherRequirements">13. Any Other Requirements</label>
+                  <textarea id="otherRequirements" class="form-control" placeholder="Any additional facility or resource requirements..."></textarea>
+                </div>
+
+                <div class="form-group">
+                  <label for="estimatedBudget">14. Estimated Budget <span style="color:#EF4444">*</span></label>
+                  <input type="text" id="estimatedBudget" class="form-control" placeholder="e.g., $2,500.00 USD" required>
+                </div>
+
+                <div class="form-group">
+                  <label for="proposedFunding">15. Proposed Sources of Funding <span style="color:#EF4444">*</span></label>
+                  <input type="text" id="proposedFunding" class="form-control" placeholder="e.g., NUST IBD Seed Fund, Ministry Grant" required>
+                </div>
+              </div>
+            </div>
+
+            <!-- STEP 5: REVIEW & SUBMIT -->
+            <div class="form-step-content" data-step="5">
+              <div class="form-section-title">✅ Step 5: Final Review & Electronic Authorization</div>
+
+              <div id="reviewSummaryContent" style="margin-bottom: 1.5rem;"></div>
+
+              <div style="background: rgba(243, 156, 18, 0.1); border: 1px solid rgba(243, 156, 18, 0.4); padding: 1rem; border-radius: 8px; font-size: 0.88rem; color: var(--nust-gold-glow);">
+                ℹ️ <strong>Declaration:</strong> By clicking 'Submit Application to IBD', I confirm that the information provided in form <strong>IBD 002 23 ITT</strong> is accurate and true to the best of my knowledge, and I authorize NUST Innovation and Business Development department to register my student innovation profile.
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Wizard Footer Controls -->
+          <div class="wizard-footer">
+            <button type="button" class="btn btn-secondary" id="btnPrevStep">
+              ⬅️ Previous Step
+            </button>
+            <div></div>
+            <button type="button" class="btn btn-primary" id="btnNextStep">
+              Next Step ➡️
+            </button>
+            <button type="submit" class="btn btn-gold" id="btnSubmitForm" style="display:none;">
+              🚀 Submit Application to IBD
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+
+    <!-- VIEW 3: TRL REFERENCE GUIDE -->
+    <section id="view-trl-guide" class="view-section">
+      <div class="card-panel" style="margin-bottom: 1.5rem;">
+        <div class="panel-title" style="font-size: 1.3rem;">
+          💡 Technology Readiness Level (TRL) Standard Guide
+        </div>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.3rem;">
+          Key reference for Form <strong>IBD 002 23 ITT</strong> (Page 3). Used by the NUST Innovation and Business Development department to assess project incubation readiness.
+        </p>
+      </div>
+
+      <div class="trl-grid" id="trlGuideGrid">
+        <!-- Rendered by app.js -->
+      </div>
+    </section>
+
+
+    <!-- VIEW 4: OFFICIAL PRINT PREVIEW -->
+    <section id="view-print-preview" class="view-section">
+      <div class="card-panel no-print" style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <h3 style="color: var(--nust-gold-glow);">🖨️ Official Document Print Preview</h3>
+          <p style="color: var(--text-muted); font-size: 0.85rem;">Formatted to exact NUST Innovation and Business Development standards (IBD 002 23 ITT)</p>
+        </div>
+        <div style="display: flex; gap: 0.75rem;">
+          <button class="btn btn-secondary" onclick="document.querySelector('[data-tab=\'dashboard\']').click();">
+            ⬅️ Back to Registry
+          </button>
+          <button class="btn btn-gold" onclick="window.print();">
+            🖨️ Print / Save as PDF
+          </button>
+        </div>
+      </div>
+
+      <div id="printableDocumentArea">
+        <!-- Rendered dynamically when clicking 'Form' in table -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Inspection Modal -->
+  <div class="modal-backdrop" id="detailModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3>🔍 Student Innovation Application Inspector</h3>
+        <button class="close-btn" id="btnCloseModal">&times;</button>
+      </div>
+      <div class="modal-body" id="detailModalBody">
+        <!-- Dynamic Content -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Application Scripts -->
+  <script src="js/trl-data.js"></script>
+  <script src="js/sample-data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
